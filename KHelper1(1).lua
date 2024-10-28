@@ -985,6 +985,7 @@ local mainIni = inicfg.load({
 		checked_test_14 = false,
 		checked_test_15 = false,
 		checked_test_16 = false,
+		checked_test_66 = false, -- тайник
 		checked_test_17 = false,
 		checked_test_18 = false,
 		checked_test_19 = false,
@@ -1012,7 +1013,7 @@ local mainIni = inicfg.load({
 		checked_test_41 = false,
 		checked_test_42 = false,
 		checked_test_43 = false,
-		checked_test_44 = false, --алко
+		checked_test_44 = false, -- алко
 		checked_test_45 = false, -- малый набор
 		checked_test_46 = false, -- белый набор
 		checked_test_47 = false,
@@ -1207,6 +1208,7 @@ local checboxingeb = {
  checked_test_14 = imgui.ImBool(mainIni.checkboxs.checked_test_14), --	Автоперенос Delirium
  checked_test_15 = imgui.ImBool(mainIni.checkboxs.checked_test_15), -- Отображать кол-во камней[Тюрьма]
  checked_test_16 = imgui.ImBool(mainIni.checkboxs.checked_test_16), -- Авторешение уравнений[Дома]
+ checked_test_66 = imgui.ImBool(mainIni.checkboxs.checked_test_66), -- Автоподбор цифр[Тайник]
  checked_test_17 = imgui.ImBool(mainIni.checkboxs.checked_test_17), -- Статистика казино
  checked_test_24 = imgui.ImBool(mainIni.checkboxs.checked_test_24), -- Отображать без выиграша
  checked_test_25 = imgui.ImBool(mainIni.checkboxs.checked_test_25), -- Отображать фрукты
@@ -2020,7 +2022,7 @@ function imgui.OnDrawFrame()
 		imgui.EndChild()
 		saving()
 		imgui.SetCursorPos(imgui.ImVec2(473, 246))
-		imgui.BeginChild("##решение уравнений", imgui.ImVec2(178, 100), true, imgui.WindowFlags.NoScrollbar)
+		imgui.BeginChild("##решение уравнений", imgui.ImVec2(178, 123), true, imgui.WindowFlags.NoScrollbar)
 		imgui.Checkbox(u8"Решение уравнений", checboxingeb.checked_test_16)
 		if imgui.IsItemHovered() then
 			imgui.BeginTooltip()
@@ -2042,12 +2044,18 @@ function imgui.OnDrawFrame()
 			imgui.TextColoredRGB('Функция для отображения уже {FF0000}использованных {ffffff}дешифраторов.\nДанные беруться на основе проверки {FF0000}ID {FFFFFF}дешифратора. \nЕсли данный дешифратор уже {FF0000}открывался в инветаре {FFFFFF}то он заноситься в список\nТакже меняет название предмета на {FF0000}"Decoder has already been used"')
 			imgui.EndTooltip()
 		end
+		imgui.Checkbox(u8"Подбор цифр", checboxingeb.checked_test_66)
+		if imgui.IsItemHovered() then
+			imgui.BeginTooltip()
+			imgui.TextColoredRGB('Функция для подбора кода к тайнику')
+			imgui.EndTooltip()
+		end
 		imgui.EndChild()
-		imgui.SetCursorPos(imgui.ImVec2(473, 351))
+		imgui.SetCursorPos(imgui.ImVec2(473, 371))
 		imgui.BeginChild("##до конца капта", imgui.ImVec2(178, 34), true, imgui.WindowFlags.NoScrollbar)
 		imgui.Checkbox(u8"Время до конца капта", checboxingeb.checked_test_38)
 		imgui.EndChild()
-		imgui.SetCursorPos(imgui.ImVec2(473, 390))
+		imgui.SetCursorPos(imgui.ImVec2(473, 406))
 		imgui.BeginChild("##удаление аксов", imgui.ImVec2(178, 34), true, imgui.WindowFlags.NoScrollbar)
 		imgui.Checkbox(u8"Скрывать аксессуары", checboxingeb.checked_test_39)
 		imgui.EndChild()
@@ -2948,7 +2956,59 @@ function sampev.onShowDialog(dialogId, style, title, button1, button2, text) -- 
 	  end
 	  return false
 	end
-  end
+    end
+	print('dialogId: ' .. dialogId)
+	-- if checboxingeb.checked_test_16.v then
+		if dialogId == 72 then -- диалоговое окно попыток ввода паролей
+			-- text = Введите код (3 цифры):
+			local digitCount = string.match(text, "(%d+)%s*цифры")
+			local interval = 2000 -- Интервал в миллисекундах между вводами
+			local maxAttempts = 999
+			print(dialogId)
+			print(text)
+			print(digitCount)
+			af = 0
+			print('')
+			print(os.time())
+			print(os.time() - af)
+			print('')
+			
+			if (os.time() - af > 3) then
+				print(digitCount)
+				af = os.time()
+			end
+			-- tryPasswords(interval, maxAttempts)
+			-- продолжить тут, добавить в метод таймер.
+			
+		end
+	-- end
+end
+
+function tryPasswords(interval, maxAttempts)
+    for i = 0, maxAttempts do
+        -- Форматируем число, чтобы оно всегда было трехзначным
+        local password = string.format("%03d", i)
+		print('password ' .. password)
+        
+        -- Здесь вы можете отправить пароль в диалоговое окно
+        -- Например, если у вас есть ID диалога и кнопка
+        local dialogId = 72 -- Замените на актуальный ID вашего диалога
+        local buttonId = 1 -- Замените на актуальный ID вашей кнопки (0 или 1)
+        
+        -- Отправляем пароль в диалоговое окно
+        sampSendDialogResponse(dialogId, buttonId, 0, password)
+        
+        -- Ждем заданный интервал перед следующей попыткой
+        wait(4000) -- задержка 4 секунд - не работает
+    end
+end
+
+-- Функция для ожидания (в миллисекундах)
+function wait_1(ms)
+    local start = getTickCount()
+    while getTickCount() - start < ms do
+        -- Пустой цикл для ожидания
+    end
 end
 
 function sampev.onShowTextDraw(id, data) -- Функция для работы с тектсдравами
@@ -3879,6 +3939,7 @@ function saving() -- Сохранение данных
 	mainIni.checkboxs.checked_test_14 = checboxingeb.checked_test_14.v
 	mainIni.checkboxs.checked_test_15 = checboxingeb.checked_test_15.v
 	mainIni.checkboxs.checked_test_16 = checboxingeb.checked_test_16.v
+	mainIni.checkboxs.checked_test_66 = checboxingeb.checked_test_66.v
 	mainIni.checkboxs.checked_test_17 = checboxingeb.checked_test_17.v
 	mainIni.checkboxs.checked_test_18 = checboxingeb.checked_test_18.v
 	mainIni.checkboxs.checked_test_19 = checboxingeb.checked_test_19.v
