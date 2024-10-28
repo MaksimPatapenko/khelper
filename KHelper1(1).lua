@@ -8,6 +8,7 @@ require 'lib.moonloader'
 
 local font = renderCreateFont("Tahoma", 9, 8)
 local sampev = require ('lib.samp.events')
+local isTryingPasswords = false  -- Флаг для предотвращения повторного запуска
 local imgui = require 'imgui'
 local inicfg = require 'inicfg'
 local encoding = require 'encoding'
@@ -2958,57 +2959,46 @@ function sampev.onShowDialog(dialogId, style, title, button1, button2, text) -- 
 	end
     end
 	print('dialogId: ' .. dialogId)
-	-- if checboxingeb.checked_test_16.v then
+	if checboxingeb.checked_test_66.v then
+		print()
+		if isTryingPasswords then
+			return  -- Если уже идет попытка, не запускаем повторно
+		end
 		if dialogId == 72 then -- диалоговое окно попыток ввода паролей
 			-- text = Введите код (3 цифры):
-			local digitCount = string.match(text, "(%d+)%s*цифры")
-			local interval = 2000 -- Интервал в миллисекундах между вводами
-			local maxAttempts = 999
-			print(dialogId)
-			print(text)
-			print(digitCount)
-			af = 0
-			print('')
-			print(os.time())
-			print(os.time() - af)
-			print('')
-			
-			if (os.time() - af > 3) then
-				print(digitCount)
-				af = os.time()
-			end
-			-- tryPasswords(interval, maxAttempts)
-			-- продолжить тут, добавить в метод таймер.
-			
+			local digitCount = tonumber(string.match(text, "(%d+)%s*цифры"))
+			local interval = 3000 -- Интервал в миллисекундах между вводами
+			local maxAttempts = 10^digitCount - 1
+			print('digitCount: ' .. digitCount)
+			print('maxAttempts: ' .. maxAttempts)
+			isTryingPasswords = true  -- Устанавливаем флаг
+			tryPasswords(interval, maxAttempts, digitCount)
 		end
-	-- end
+	end
 end
 
-function tryPasswords(interval, maxAttempts)
-    for i = 0, maxAttempts do
-        -- Форматируем число, чтобы оно всегда было трехзначным
-        local password = string.format("%03d", i)
-		print('password ' .. password)
-        
-        -- Здесь вы можете отправить пароль в диалоговое окно
-        -- Например, если у вас есть ID диалога и кнопка
-        local dialogId = 72 -- Замените на актуальный ID вашего диалога
-        local buttonId = 1 -- Замените на актуальный ID вашей кнопки (0 или 1)
-        
-        -- Отправляем пароль в диалоговое окно
-        sampSendDialogResponse(dialogId, buttonId, 0, password)
-        
-        -- Ждем заданный интервал перед следующей попыткой
-        wait(4000) -- задержка 4 секунд - не работает
-    end
-end
+function tryPasswords(interval, maxAttempts, digitCount)
+    -- Создаем отдельный поток для выполнения цикла с паузой
+    lua_thread.create(function()
+        for i = 0, 3 do
+            -- Форматируем число, чтобы оно всегда было трехзначным
+            local password = string.format("%03d", i)
+			local formatString = "%0" .. digitCount .. "d"
+			local password = string.format(formatString, i)
 
--- Функция для ожидания (в миллисекундах)
-function wait_1(ms)
-    local start = getTickCount()
-    while getTickCount() - start < ms do
-        -- Пустой цикл для ожидания
-    end
+            print('Попытка пароля: ' .. password)
+            
+            -- Отправляем пароль в диалоговое окно
+            local buttonId = 1  -- Замените на актуальный ID вашей кнопки (0 или 1)
+			local dialogId = 72 -- Замените на актуальный ID вашего диалога
+            sampSendDialogResponse(dialogId, buttonId, 0, password)
+            
+            -- Ждем заданный интервал перед следующей попыткой
+            wait(interval)
+        end
+
+		isTryingPasswords = false  -- Сбрасываем флаг после завершения
+    end)
 end
 
 function sampev.onShowTextDraw(id, data) -- Функция для работы с тектсдравами
