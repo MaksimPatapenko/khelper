@@ -1,0 +1,59 @@
+[20:53:08.131140] (system)	Session started.
+[20:53:08.132136] (debug)	Module handle: 6C300000
+
+MoonLoader v.026.5-beta loaded.
+Developers: FYP, hnnssy, EvgeN 1137
+
+Copyright (c) 2016, BlastHack Team
+http://blast.hk/moonloader/
+
+[20:53:08.132136] (info)	Working directory: D:\delirium\GTASA\moonloader
+[20:53:08.132136] (debug)	FP Control: 0009001F
+[20:53:08.132136] (debug)	Game: GTA SA 1.0.0.0 US
+[20:53:08.132136] (system)	Installing pre-game hooks...
+[20:53:08.133133] (system)	Hooks installed.
+[20:53:09.062183] (debug)	Initializing opcode handler table
+[20:53:09.062183] (debug)	package.path = D:\delirium\GTASA\moonloader\lib\?.lua;D:\delirium\GTASA\moonloader\lib\?\init.lua;D:\delirium\GTASA\moonloader\?.lua;D:\delirium\GTASA\moonloader\?\init.lua;.\?.lua;D:\delirium\GTASA\moonloader\lib\?.luac;D:\delirium\GTASA\moonloader\lib\?\init.luac;D:\delirium\GTASA\moonloader\?.luac;D:\delirium\GTASA\moonloader\?\init.luac;.\?.luac
+[20:53:09.062183] (debug)	package.cpath = D:\delirium\GTASA\moonloader\lib\?.dll;
+[20:53:09.064176] (system)	Loading script 'D:\delirium\GTASA\moonloader\AutoReboot.lua'...
+[20:53:09.064176] (debug)	New script: 01B54A64
+[20:53:09.065174] (system)	ML-AutoReboot: Loaded successfully.
+[20:53:09.065174] (system)	Loading script 'D:\delirium\GTASA\moonloader\check-moonloader-updates.lua'...
+[20:53:09.065174] (debug)	New script: 01B54EFC
+[20:53:09.066170] (system)	Check MoonLoader Updates: Loaded successfully.
+[20:53:09.067166] (system)	Loading script 'D:\delirium\GTASA\moonloader\KHelper1(1).lua'...
+[20:53:09.067166] (debug)	New script: 01B55084
+[20:53:09.281450] (system)	Khelper: Loaded successfully.
+[20:53:09.281450] (system)	Loading script 'D:\delirium\GTASA\moonloader\MapIcons2.1.lua'...
+[20:53:09.281450] (debug)	New script: 01B545CC
+[20:53:09.282447] (system)	MapIcons2.1.lua: Loaded successfully.
+[20:53:09.282447] (system)	Loading script 'D:\delirium\GTASA\moonloader\reload_all.lua'...
+[20:53:09.282447] (debug)	New script: 0F5B1CC4
+[20:53:09.283444] (system)	ML-ReloadAll: Loaded successfully.
+[20:53:09.283444] (system)	Loading script 'D:\delirium\GTASA\moonloader\SF Integration.lua'...
+[20:53:09.283444] (debug)	New script: 0F5B215C
+[20:53:09.284441] (system)	SF Integration: Loaded successfully.
+[20:53:09.284441] (system)	Loading script 'D:\delirium\GTASA\moonloader\test.lua'...
+[20:53:09.284441] (debug)	New script: 0F5B1E4C
+[20:53:09.285437] (system)	test.lua: Loaded successfully.
+[20:53:09.285437] (system)	test.lua: Script terminated. (0F5B1E4C)
+[20:53:19.045731] (system)	Installing post-load hooks...
+[20:53:19.045731] (system)	Hooks installed.
+[20:53:46.188163] (script)	Khelper: digitCount: 2
+[20:53:46.188163] (script)	Khelper: maxAttempts: 99
+[20:53:46.188163] (script)	Khelper: Попытка пароля: 20
+[20:53:48.284672] (script)	Khelper: ---- end tryPasswords ----
+[20:53:48.284672] (script)	Khelper: Попытка пароля: 21
+[20:53:48.350624] (script)	Khelper: Код введен верно!
+[20:53:50.387581] (script)	Khelper: ---- end tryPasswords ----
+[20:53:50.387581] (script)	Khelper: Нажали F8, для скрина
+[20:53:50.494402] (script)	Khelper: Нажали Esc, чтобы кикнуло
+[20:53:57.029001] (system)	Unloading...
+[20:53:57.029001] (system)	ML-AutoReboot: Script terminated. (01B54A64)
+[20:53:57.029998] (system)	Check MoonLoader Updates: Script terminated. (01B54EFC)
+[20:53:57.029998] (system)	Khelper: Script terminated. (01B55084)
+[20:53:57.030995] (script)	MapIcons2.1.lua: {FFFFFF}[{00fc76}MapIcons{FFFFFF}]: {FF0000}All icons deleted!
+[20:53:57.030995] (system)	MapIcons2.1.lua: Script terminated. (01B545CC)
+[20:53:57.030995] (system)	ML-ReloadAll: Script terminated. (0F5B1CC4)
+[20:53:57.031991] (system)	SF Integration: Script terminated. (0F5B215C)
+[20:53:57.034981] (system)	Session terminated.

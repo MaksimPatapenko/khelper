@@ -9,6 +9,9 @@ require 'lib.moonloader'
 local font = renderCreateFont("Tahoma", 9, 8)
 local sampev = require ('lib.samp.events')
 local isTryingPasswords = false  -- Флаг для предотвращения повторного запуска
+local isCorrectCodeEntered = false  -- Флаг для отслеживания правильного кода
+local isFullHp = false -- Флаг для отслеживания 100 хп
+local isProcessMedKit = false -- Флаг для передачи сигнала, что нужно дать паузу на восполнение хп
 local imgui = require 'imgui'
 local inicfg = require 'inicfg'
 local encoding = require 'encoding'
@@ -2859,6 +2862,12 @@ function sex() -- Задержка 6с вне бексонечно цикла
 		end)
 end
 
+function sex2() -- Задержка 13с вне бексонечно цикла
+	lua_thread.create(function()
+		wait(13000)
+		end)
+end
+
 function setMapMarker(x, y, squareName) -- Установка маркера на аирдроп
 	placeWaypoint(x, y)
 	sampAddChatMessage(string.format("[KHelper]{FFFFFF} Метка установлена на квадрате {ff0000}%s {ffffff}с координатами:{ff0000} X: %d, Y: %d", squareName, x, y), 0x00befc)
@@ -2958,16 +2967,14 @@ function sampev.onShowDialog(dialogId, style, title, button1, button2, text) -- 
 	  return false
 	end
     end
-	print('dialogId: ' .. dialogId)
 	if checboxingeb.checked_test_66.v then
-		print()
 		if isTryingPasswords then
 			return  -- Если уже идет попытка, не запускаем повторно
 		end
 		if dialogId == 72 then -- диалоговое окно попыток ввода паролей
 			-- text = Введите код (3 цифры):
 			local digitCount = tonumber(string.match(text, "(%d+)%s*цифры"))
-			local interval = 3000 -- Интервал в миллисекундах между вводами
+			local interval = 2100 -- Интервал в миллисекундах между вводами
 			local maxAttempts = 10^digitCount - 1
 			print('digitCount: ' .. digitCount)
 			print('maxAttempts: ' .. maxAttempts)
@@ -2980,9 +2987,23 @@ end
 function tryPasswords(interval, maxAttempts, digitCount)
     -- Создаем отдельный поток для выполнения цикла с паузой
     lua_thread.create(function()
-        for i = 0, 3 do
-            -- Форматируем число, чтобы оно всегда было трехзначным
-            local password = string.format("%03d", i)
+        for i = 20, 22 do -- for i = 0, maxAttempts do
+			if isCorrectCodeEntered then -- Проверяем, если код уже введен правильно
+				print('Нажали F8, для скрина')
+				setVirtualKeyDown(119, true)  -- Нажимаем клавишу F8
+				wait(100)                      -- Ждем 100 миллисекунд
+				setVirtualKeyDown(119, false) -- Отпускаем клавишу F8
+				print('Нажали Esc, чтобы кикнуло')
+				setVirtualKeyDown(27, true)  -- Нажимаем клавишу Esc
+				wait(100)  -- Ждем 100 миллисекунд (например)
+				setVirtualKeyDown(27, false)  -- Отпускаем клавишу Esc
+				break  -- Останавливаем цикл
+			end
+
+			while isProcessMedKit do
+                wait(5000)  -- Проверяем каждые 100 мс
+            end
+
 			local formatString = "%0" .. digitCount .. "d"
 			local password = string.format(formatString, i)
 
@@ -2992,9 +3013,10 @@ function tryPasswords(interval, maxAttempts, digitCount)
             local buttonId = 1  -- Замените на актуальный ID вашей кнопки (0 или 1)
 			local dialogId = 72 -- Замените на актуальный ID вашего диалога
             sampSendDialogResponse(dialogId, buttonId, 0, password)
-            
+
             -- Ждем заданный интервал перед следующей попыткой
             wait(interval)
+			print('---- end tryPasswords ----')
         end
 
 		isTryingPasswords = false  -- Сбрасываем флаг после завершения
@@ -3014,6 +3036,25 @@ function sampev.onShowTextDraw(id, data) -- Функция для работы с тектсдравами
 			if id == 2057 and tonumber(data.lineWidth) <= 560 then
 				sampSendChat('//a')
 				sex()
+			end
+		end
+		if checboxingeb.checked_test_66.v then
+			-- 535 - 0 хп
+			-- 605 - 100хп
+			-- 550 и ниже - аптеку делаем			
+			if not isProcessMedKit and id == 2057 and tonumber(data.lineWidth) <= 550 then
+				print('Использование MEDKIT')
+				wait(100)
+				sampSendChat('//a')
+				print('Начало ожидания 13 сек')
+				isProcessMedKit = true
+				wait(13000)
+				isProcessMedKit = false
+
+				-- setVirtualKeyDown(59, true)
+				-- wait(50)
+				-- setVirtualKeyDown(59, false)
+				print('Конец ожидания.')
 			end
 		end
 		if checboxingeb.checked_test_3.v then
@@ -3653,6 +3694,10 @@ end
 
 
 function sampev.onServerMessage(color, text) -- Функция для работы с сообщениями в чате
+		if checboxingeb.checked_test_66.v  and text == 'Код введен верно, тайник открыт для вас' then
+			print('Код введен верно!')
+			isCorrectCodeEntered = true
+		end
 		if checboxingeb.checked_test_7.v then
 			if color == -1431655681 then
 				local squareName = text:match("Самолет с провизией вылетел в квадрат (%a%d)")
